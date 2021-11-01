@@ -12,6 +12,7 @@
 *
 ******************************************************************************/
 #include "LCD_Touch.h"
+#include "stdlib.h"
 
 extern LCD_DIS sLCD_DIS;
 extern uint8_t lcd_device_type;
@@ -68,6 +69,7 @@ static uint16_t TP_Read_ADC_Average(uint8_t Channel_Cmd) {
     }
     //LCD SPI speed = 18 MHz
     spi_set_baudrate(SPI_PORT, 18000000);
+
     //Sort from small to large
     for (i = 0; i < READ_TIMES - 1; i++) {
         for (j = i + 1; j < READ_TIMES; j++) {

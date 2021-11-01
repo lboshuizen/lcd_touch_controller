@@ -64,7 +64,7 @@ public:
 
     LcdDriver(const LcdDriver& copy) = delete;
 
-    void init(LCD_SCAN_DIR scanDir = D2U_L2R);
+    void init(LCD_SCAN_DIR scanDir = L2R_U2D);
 
     void reset(){
         RST.up();

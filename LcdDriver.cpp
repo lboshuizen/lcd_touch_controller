@@ -72,7 +72,7 @@ void LcdDriver::set_reg(uint8_t reg, uint8_t data){
 }
 
 void LcdDriver::init(LCD_SCAN_DIR scanDir){
-    spi_init(spi1, 4000000);
+    spi_init(spi1, 14000000);
     gpio_set_function(LCD_CLK_PIN,GPIO_FUNC_SPI);
     gpio_set_function(LCD_MOSI_PIN,GPIO_FUNC_SPI);
     gpio_set_function(LCD_MISO_PIN,GPIO_FUNC_SPI);
