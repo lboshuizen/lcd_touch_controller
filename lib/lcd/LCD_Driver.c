@@ -16,7 +16,7 @@
 #include "LCD_Driver.h"
 
 LCD_DIS sLCD_DIS;
-uint8_t id;
+uint8_t lcd_device_type;
 /*******************************************************************************
 function:
 	Hardware reset
@@ -49,7 +49,7 @@ void LCD_WriteReg(uint8_t Reg)
 
 void LCD_WriteData(uint16_t Data)
 {
-	if(LCD_2_8 == id){
+	if(LCD_2_8 == lcd_device_type){
 		DEV_Digital_Write(LCD_DC_PIN,1);
 		DEV_Digital_Write(LCD_CS_PIN,0);
 		SPI4W_Write_Byte((uint8_t)Data);
@@ -86,8 +86,8 @@ function:
 *******************************************************************************/
 static void LCD_InitReg(void)
 {
-	id = LCD_Read_Id();
-	if(LCD_2_8 == id){
+    lcd_device_type = LCD_Read_Id();
+	if(LCD_2_8 == lcd_device_type){
 		LCD_WriteReg(0x11);
 		Driver_Delay_ms(100);
 		LCD_WriteReg(0x36);
@@ -213,7 +213,7 @@ void LCD_SetGramScanWay(LCD_SCAN_DIR Scan_dir)
     uint16_t MemoryAccessReg_Data = 0; //addr:0x36
     uint16_t DisFunReg_Data = 0; //addr:0xB6
 
-	if(LCD_2_8 == id){
+	if(LCD_2_8 == lcd_device_type){
 		/*		it will support later		*/
 		//Pico-ResTouch-LCD-2.8
 		// switch(Scan_dir){
@@ -348,15 +348,15 @@ void LCD_SetGramScanWay(LCD_SCAN_DIR Scan_dir)
 function:
 	initialization
 ********************************************************************************/
-void LCD_Init(LCD_SCAN_DIR LCD_ScanDir, uint16_t LCD_BLval)
+void LCD_Init(LCD_SCAN_DIR LCD_ScanDir )//, uint16_t LCD_BLval)
 {
     
     LCD_Reset();//Hardware reset
 
     LCD_InitReg();//Set the initialization register
 	
-	if(LCD_BLval > 1000)
-		LCD_BLval = 1000;
+	//if(LCD_BLval > 1000)
+	//	LCD_BLval = 1000;
 	//LCD_SetBackLight(LCD_BLval);
 	
 	LCD_SetGramScanWay(LCD_ScanDir);//Set the display scan and color transfer modes
@@ -373,22 +373,21 @@ parameter:
 ********************************************************************************/
 void LCD_SetWindow(POINT Xstart, POINT Ystart,	POINT Xend, POINT Yend)
 {	
-
 	//set the X coordinates
-	LCD_WriteReg(0x2A);
+	LCD_WriteReg(0x2A); // Column Address Set
 	LCD_WriteData(Xstart >> 8);	 		//Set the horizontal starting point to the high octet
 	LCD_WriteData(Xstart & 0xff);	 	//Set the horizontal starting point to the low octet
 	LCD_WriteData((Xend - 1) >> 8);		//Set the horizontal end to the high octet
 	LCD_WriteData((Xend - 1) & 0xff);	//Set the horizontal end to the low octet
 
 	//set the Y coordinates
-	LCD_WriteReg(0x2B);
+	LCD_WriteReg(0x2B); // Row Address Se
 	LCD_WriteData(Ystart >> 8);
 	LCD_WriteData(Ystart & 0xff );
 	LCD_WriteData((Yend - 1) >> 8);
 	LCD_WriteData((Yend - 1) & 0xff);
 
-    LCD_WriteReg(0x2C);
+    LCD_WriteReg(0x2C); // Memory Write
 }
 
 /********************************************************************************

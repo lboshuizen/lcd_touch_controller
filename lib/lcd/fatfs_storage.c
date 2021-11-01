@@ -73,7 +73,7 @@
 */
 
 #define RGB24TORGB16(R,G,B) ((R>>3)<<11)|((G>>2)<<5)|(B>>3)
-#define PIXEL(__M)  ((((__M) + 31 ) >> 5) << 2)//¶ÔÓÚ24Î»Õæ²ÊÉ« Ã¿Ò»ÐÐµÄÏñËØ¿í¶È±ØÐëÊÇ4µÄ±¶Êý  ·ñÔò²¹0²¹Æë
+#define PIXEL(__M)  ((((__M) + 31 ) >> 5) << 2)//ï¿½ï¿½ï¿½ï¿½24Î»ï¿½ï¿½ï¿½É« Ã¿Ò»ï¿½Ðµï¿½ï¿½ï¿½ï¿½Ø¿ï¿½È±ï¿½ï¿½ï¿½ï¿½ï¿½4ï¿½Ä±ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½
 
 extern LCD_DIS sLCD_DIS;
 
@@ -84,7 +84,7 @@ FIL MyFile;
 UINT BytesWritten;
 UINT BytesRead;
 uint16_t pic[76800];
-extern uint8_t id;
+extern uint8_t lcd_device_type;
 /**
 * @}
 */
@@ -164,7 +164,7 @@ uint32_t Storage_OpenReadFile(uint8_t Xpoz, uint16_t Ypoz, const char* BmpName)
     f_open(&file1, (TCHAR const*)BmpName, FA_READ);
     f_read(&file1, aBuffer, index, &BytesRead);
     
-    if(LCD_2_8 == id){
+    if(LCD_2_8 == lcd_device_type){
 		for (i = 0; i < height; i ++) {
 			  f_read(&file1, aBuffer, 360, (UINT *)&BytesRead);
 			  f_read(&file1, aBuffer + 360, 360, (UINT *)&BytesRead);

@@ -10,26 +10,17 @@ set(CMAKE_CXX_STANDARD 17)
 # Initialize the SDK
 pico_sdk_init()
 
-add_subdirectory(lib/config)
 add_subdirectory(lib/lcd)
-add_subdirectory(lib/font)
-add_subdirectory(lib/fatfs)
-add_subdirectory(lib/sdcard)
-
-include_directories(./lib/config)
 include_directories(./lib/lcd)
-include_directories(./lib/font)
-include_directories(./lib/fatfs)
-include_directories(./lib/sdcard)
 
 add_executable(
         touchcontroller
-        main.c
+        main.cpp
         lcd_test.c
-        )
+        screen.cpp screen.h LcdDriver.cpp LcdDriver.h LcdScreen.cpp LcdScreen.h)
 
 # Pull in our pico_stdlib which pulls in commonly used features
-target_link_libraries(touchcontroller pico_stdlib lcd font config pico_stdlib hardware_spi fatfs)
+target_link_libraries(touchcontroller pico_stdlib touchlcd hardware_spi)
 
 # create map/bin/hex file etc.
 pico_add_extra_outputs(touchcontroller)

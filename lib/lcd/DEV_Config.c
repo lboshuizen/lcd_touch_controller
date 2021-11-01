@@ -44,6 +44,7 @@ void DEV_GPIO_Init(void)
     DEV_GPIO_Mode(TP_CS_PIN,GPIO_OUT);
     DEV_GPIO_Mode(TP_IRQ_PIN,GPIO_IN);
     DEV_GPIO_Mode(SD_CS_PIN,GPIO_OUT);
+
 	gpio_set_pulls(TP_IRQ_PIN,true,false);
 
     DEV_Digital_Write(TP_CS_PIN, 1);
@@ -106,6 +107,5 @@ void Driver_Delay_ms(uint32_t xms)
 
 void Driver_Delay_us(uint32_t xus)
 {
-	int j;
-    for(j=xus; j > 0; j--);
+    for(auto j=xus; j > 0; j--);
 }

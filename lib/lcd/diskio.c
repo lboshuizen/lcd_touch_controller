@@ -5,18 +5,18 @@
 /* disk I/O modules and attach it to FatFs module with common interface. */
 /*-----------------------------------------------------------------------*/
 #include "DEV_Config.h"
-#include "MMC_SD.h"	
+#include "MMC_SD.h"
 #include "ff.h"
 #include "diskio.h"
 
 /*-----------------------------------------------------------------------*/
 /* Inidialize a Drive                                                    */
 
-#define SD_CARD	 0  //SD¿¨,¾í±êÎª0
+#define SD_CARD	 0  //SDï¿½ï¿½,ï¿½ï¿½ï¿½Îª0
 
 #define FLASH_SECTOR_SIZE 	512			  
 
-//³õÊ¼»¯´ÅÅÌ
+//ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 DSTATUS disk_initialize (
 	BYTE drv				/* Physical drive nmuber (0..) */
 )
@@ -24,12 +24,12 @@ DSTATUS disk_initialize (
 	uint8_t res=0;	    
 	switch(drv)
 	{
-		case SD_CARD://SD¿¨
+		case SD_CARD://SDï¿½ï¿½
 			res = SD_Initialize();//SD_Initialize() 
-		 	if(res)//STM32 SPIµÄbug,ÔÚsd¿¨²Ù×÷Ê§°ÜµÄÊ±ºòÈç¹û²»Ö´ÐÐÏÂÃæµÄÓï¾ä,¿ÉÄÜµ¼ÖÂSPI¶ÁÐ´Òì³£
+		 	if(res)//STM32 SPIï¿½ï¿½bug,ï¿½ï¿½sdï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Üµï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½SPIï¿½ï¿½Ð´ï¿½ì³£
 			{
 				SD_SPI_SpeedLow();
-				SD_SPI_ReadWriteByte(0xff);//Ìá¹©¶îÍâµÄ8¸öÊ±ÖÓ
+				SD_SPI_ReadWriteByte(0xff);//ï¿½á¹©ï¿½ï¿½ï¿½ï¿½ï¿½8ï¿½ï¿½Ê±ï¿½ï¿½
 				SD_SPI_SpeedHigh();
 			}
   			break;
@@ -37,20 +37,20 @@ DSTATUS disk_initialize (
 			res=1; 
 	}		 
 	if(res)return  STA_NOINIT;
-	else return 0; //³õÊ¼»¯³É¹¦
+	else return 0; //ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½É¹ï¿½
 }   
-//»ñµÃ´ÅÅÌ×´Ì¬
+//ï¿½ï¿½Ã´ï¿½ï¿½ï¿½×´Ì¬
 DSTATUS disk_status (
 	BYTE drv		/* Physical drive nmuber (0..) */
 )
 {		   
     return 0;
 }
- //¶ÁÉÈÇø
- //drv:´ÅÅÌ±àºÅ0~9
- //*buff:Êý¾Ý½ÓÊÕ»º³åÊ×µØÖ·
- //sector:ÉÈÇøµØÖ·
- //count:ÐèÒª¶ÁÈ¡µÄÉÈÇøÊý
+ //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ //drv:ï¿½ï¿½ï¿½Ì±ï¿½ï¿½0~9
+ //*buff:ï¿½ï¿½ï¿½Ý½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½×µï¿½Ö·
+ //sector:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+ //count:ï¿½ï¿½Òªï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 DRESULT disk_read (
 	BYTE drv,		/* Physical drive nmuber (0..) */
 	BYTE *buff,		/* Data buffer to store read data */
@@ -59,30 +59,30 @@ DRESULT disk_read (
 )
 {
 	uint8_t res=0; 
-    if (!count)return RES_PARERR;//count²»ÄÜµÈÓÚ0£¬·ñÔò·µ»Ø²ÎÊý´íÎó		 	 
+    if (!count)return RES_PARERR;//countï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½ò·µ»Ø²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		 	 
 	switch(drv)
 	{
-		case SD_CARD://SD¿¨
+		case SD_CARD://SDï¿½ï¿½
 			res=SD_ReadDisk(buff,sector,count);	 
-		 	if(res)//STM32 SPIµÄbug,ÔÚsd¿¨²Ù×÷Ê§°ÜµÄÊ±ºòÈç¹û²»Ö´ÐÐÏÂÃæµÄÓï¾ä,¿ÉÄÜµ¼ÖÂSPI¶ÁÐ´Òì³£
+		 	if(res)//STM32 SPIï¿½ï¿½bug,ï¿½ï¿½sdï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Üµï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½,ï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½SPIï¿½ï¿½Ð´ï¿½ì³£
 			{
 				SD_SPI_SpeedLow();
-				SD_SPI_ReadWriteByte(0xff);//Ìá¹©¶îÍâµÄ8¸öÊ±ÖÓ
+				SD_SPI_ReadWriteByte(0xff);//ï¿½á¹©ï¿½ï¿½ï¿½ï¿½ï¿½8ï¿½ï¿½Ê±ï¿½ï¿½
 				SD_SPI_SpeedHigh();
 			}
 			break;
 		default:
 			res=1; 
 	}
-   //´¦Àí·µ»ØÖµ£¬½«SPI_SD_driver.cµÄ·µ»ØÖµ×ª³Éff.cµÄ·µ»ØÖµ
+   //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½SPI_SD_driver.cï¿½Ä·ï¿½ï¿½ï¿½Öµ×ªï¿½ï¿½ff.cï¿½Ä·ï¿½ï¿½ï¿½Öµ
     if(res==0x00)return RES_OK;	 
     else return RES_ERROR;	   
 }  
- //Ð´ÉÈÇø
- //drv:´ÅÅÌ±àºÅ0~9
- //*buff:·¢ËÍÊý¾ÝÊ×µØÖ·
- //sector:ÉÈÇøµØÖ·
- //count:ÐèÒªÐ´ÈëµÄÉÈÇøÊý	    
+ //Ð´ï¿½ï¿½ï¿½ï¿½
+ //drv:ï¿½ï¿½ï¿½Ì±ï¿½ï¿½0~9
+ //*buff:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×µï¿½Ö·
+ //sector:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·
+ //count:ï¿½ï¿½ÒªÐ´ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	    
 #if _READONLY == 0
 DRESULT disk_write (
 	BYTE drv,			/* Physical drive nmuber (0..) */
@@ -92,25 +92,25 @@ DRESULT disk_write (
 )
 {
 	uint8_t res=0;  
-    if (!count)return RES_PARERR;//count²»ÄÜµÈÓÚ0£¬·ñÔò·µ»Ø²ÎÊý´íÎó		 	 
+    if (!count)return RES_PARERR;//countï¿½ï¿½ï¿½Üµï¿½ï¿½ï¿½0ï¿½ï¿½ï¿½ï¿½ï¿½ò·µ»Ø²ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½		 	 
 	switch(drv)
 	{
-		case SD_CARD://SD¿¨
+		case SD_CARD://SDï¿½ï¿½
 			res=SD_WriteDisk((uint8_t*)buff,sector,count);
 			break;
 		default:
 			res=1; 
 	}
-    //´¦Àí·µ»ØÖµ£¬½«SPI_SD_driver.cµÄ·µ»ØÖµ×ª³Éff.cµÄ·µ»ØÖµ
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½SPI_SD_driver.cï¿½Ä·ï¿½ï¿½ï¿½Öµ×ªï¿½ï¿½ff.cï¿½Ä·ï¿½ï¿½ï¿½Öµ
     if(res == 0x00)return RES_OK;	 
     else return RES_ERROR;		 
 }
 #endif /* _READONLY */
 
-//ÆäËû±í²ÎÊýµÄ»ñµÃ
- //drv:´ÅÅÌ±àºÅ0~9
- //ctrl:¿ØÖÆ´úÂë
- //*buff:·¢ËÍ/½ÓÊÕ»º³åÇøÖ¸Õë
+//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä»ï¿½ï¿½
+ //drv:ï¿½ï¿½ï¿½Ì±ï¿½ï¿½0~9
+ //ctrl:ï¿½ï¿½ï¿½Æ´ï¿½ï¿½ï¿½
+ //*buff:ï¿½ï¿½ï¿½ï¿½/ï¿½ï¿½ï¿½Õ»ï¿½ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½
 DRESULT disk_ioctl (
 	BYTE drv,		/* Physical drive nmuber (0..) */
 	BYTE ctrl,		/* Control code */
@@ -118,7 +118,7 @@ DRESULT disk_ioctl (
 )
 {	
 	DRESULT res;						  			     
-	if(drv==SD_CARD)//SD¿¨
+	if(drv==SD_CARD)//SDï¿½ï¿½
 	{
 	    switch(ctrl)
 	    {
@@ -144,7 +144,7 @@ DRESULT disk_ioctl (
 		        res = RES_PARERR;
 		        break;
 	    }
-	}else res=RES_ERROR;//ÆäËûµÄ²»Ö§³Ö
+	}else res=RES_ERROR;//ï¿½ï¿½ï¿½ï¿½ï¿½Ä²ï¿½Ö§ï¿½ï¿½
     return res;
 } 
 

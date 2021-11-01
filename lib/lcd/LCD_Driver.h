@@ -38,7 +38,7 @@ function:
 #define LCD_3_5_WIDTH  (LCD_X_MAXPIXEL - 2 * LCD_X)  //LCD width
 #define LCD_3_5_HEIGHT  LCD_Y_MAXPIXEL //LCD height
 
-#define LCD_2_8_WIDTH  	240  //LCD width
+#define LCD_2_8_WIDTH  	240  //LCD widthNew KB
 #define LCD_2_8_HEIGHT   320
 
 /********************************************************************************
@@ -74,7 +74,7 @@ typedef struct {
 function:
 			Macro definition variable name
 ********************************************************************************/
-void LCD_Init(LCD_SCAN_DIR LCD_ScanDir, uint16_t LCD_BLval);
+void LCD_Init(LCD_SCAN_DIR LCD_ScanDir); //, uint16_t LCD_BLval);
 void LCD_SetGramScanWay(LCD_SCAN_DIR Scan_dir);
 
 void LCD_WriteReg(uint8_t Reg);
