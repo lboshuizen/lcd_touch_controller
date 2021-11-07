@@ -115,7 +115,7 @@
 
 
 #define _STRF_ENCODE    3 /* 0:ANSI/OEM, 1:UTF-16LE, 2:UTF-16BE, 3:UTF-8 */
-/* When Unicode API is enabled, character encoding on the all FatFs API is switched
+/* When Unicode API is _enabled, character encoding on the all FatFs API is switched
 /  to Unicode. This option selects the character encoding on the file to be read/written
 /  via string functions, f_gets(), f_putc(), f_puts and f_printf().
 /  This option has no effect when _LFN_UNICODE is 0. */

@@ -1234,7 +1234,7 @@ FRESULT dir_alloc (
 			} else {
 				n = 0;					/* Not a blank entry. Restart to search */
 			}
-			res = dir_next(dp, 1);		/* Next entry with table stretch enabled */
+			res = dir_next(dp, 1);		/* Next entry with table stretch _enabled */
 		} while (res == FR_OK);
 	}
 	if (res == FR_NO_FILE) res = FR_DENIED;	/* No directory entry to allocate */

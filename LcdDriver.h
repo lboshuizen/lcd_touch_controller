@@ -50,7 +50,7 @@ private:
     void write_reg(uint8_t reg);
 
     void set_reg(uint8_t reg, uint8_t data);
-    void set_scandir(LCD_SCAN_DIR _){ set_reg( 0x36, 0x00); }
+    void set_scandir(LCD_SCAN_DIR sd){ set_reg( 0x36, sd); write_reg(0x29); }
 
     void write_all_data(uint16_t data, uint32_t len);
     void init_reg();
