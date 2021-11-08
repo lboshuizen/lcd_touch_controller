@@ -14,7 +14,6 @@ void LcdScreen::set_point_color(COLOR color, uint16_t x, uint16_t y) const{
 
 void LcdScreen::point(uint16_t x, uint16_t y, COLOR color, DOT_PIXEL pixel_size, DOT_STYLE style) const{
     if ( x > Width || y > Height) {
-        //DEBUG("GUI_DrawPoint Input exceeds the normal display range\r\n");
         return;
     }
 

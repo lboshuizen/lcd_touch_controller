@@ -6,11 +6,29 @@
 #define TOUCHCONTROLLER_GUI_H
 
 #include <vector>
+#include <functional>
 #include "LcdScreen.h"
 
 class Drawable {
+
+protected:
+    uint16_t _x;
+    uint16_t _y;
+    uint16_t _x2;
+    uint16_t _y2;
+
+private:
+
+    std::function<bool(Drawable &)> _on_touched;
+    static bool default_handler(Drawable &_){ return false; }
+
 public:
+    Drawable(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2):
+        _x(x1), _y(y1), _x2(x2), _y2(y2),
+        _on_touched(default_handler){};
     virtual void draw(const LcdScreen &scr) const = 0;
+
+    void touched(std::function<bool(Drawable &)> &f){ _on_touched = f;}
 };
 
 class Control : public Drawable {
@@ -19,23 +37,23 @@ class Control : public Drawable {
     bool _visible;
 
 public:
-    Control() : _enabled(true), _visible(true){}
+    Control(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) :
+    Drawable(x1,y1,x2,y2),
+    _enabled(true), _visible(true){}
 
     void draw(const LcdScreen &scr) const override;
 
-    bool IsVisible(){ return _visible; };
-    bool IsEnabled(){ return _enabled; };
+    inline bool IsVisible() const { return _visible; };
+    inline bool IsEnabled() const { return _enabled; };
 
-    void Enable(bool f){ _enabled = f;};
-    void Visible(bool f){ _visible = f;};
+    inline void disable(){ enable(false); }
+
+    inline void enable(bool f=true){ _enabled = f;};
+    inline void visible(bool f){ _visible = f;};
 };
 
 class Button : public Control {
 private:
-    uint16_t _x;
-    uint16_t _y;
-    uint16_t _w;
-    uint16_t _h;
     COLOR   _color;
     const char *_text;
     const sFONT *_font;
@@ -46,13 +64,14 @@ public:
     [[nodiscard]] COLOR get_color() const { return _color; };
 
     Button(uint16_t x, uint16_t y, uint16_t w, uint16_t h, COLOR c):
-        _x(x), _y(y), _w(w), _h(h), _color(c), _text(nullptr), _font(nullptr){}
+        Control(x,y,x+w, y+h),
+        _color(c), _text(nullptr), _font(nullptr){}
 
     Button(uint16_t x, uint16_t y, uint16_t w, uint16_t h, COLOR c, const char *t, const sFONT *f):
-            _x(x), _y(y), _w(w), _h(h), _color(c), _text(t), _font(f){}
+            Control(x,y,x+w, y+h),
+            _color(c), _text(t), _font(f){}
 
     void draw(const LcdScreen &scr) const override;
-
 };
 
 class View {

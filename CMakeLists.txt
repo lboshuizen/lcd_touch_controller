@@ -17,7 +17,7 @@ add_executable(
         touchcontroller
         main.cpp
         lcd_test.c
-        screen.cpp screen.h LcdDriver.cpp LcdDriver.h LcdScreen.cpp LcdScreen.h View.cpp View.h Gui.cpp Gui.h)
+        screen.cpp screen.h LcdDriver.cpp LcdDriver.h LcdScreen.cpp LcdScreen.h Gui.cpp Gui.h TouchDriver.cpp TouchDriver.h Spi.cpp Spi.h)
 
 # Pull in our pico_stdlib which pulls in commonly used features
 target_link_libraries(touchcontroller pico_stdlib touchlcd hardware_spi)
@@ -26,4 +26,4 @@ target_link_libraries(touchcontroller pico_stdlib touchlcd hardware_spi)
 pico_add_extra_outputs(touchcontroller)
 
 # add url via pico_set_program_url
-# example_auto_set_url(blink)
+# example_auto_set_url(scan)

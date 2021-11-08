@@ -14,17 +14,21 @@ class LcdScreen {
 private:
 
     LcdDriver &lcd;
+    COLOR     _background;
 
 public:
 
-    explicit LcdScreen(LcdDriver& driver): lcd(driver){}
+    explicit LcdScreen(LcdDriver& driver): lcd(driver), _background(0){}
 
-    const uint16_t Width = LCD_2_8_WIDTH;
-    const uint16_t Height = LCD_2_8_HEIGHT;
+    const uint16_t Width = LCD_2_8_HEIGHT;
+    const uint16_t Height = LCD_2_8_WIDTH;
 
-    void clear(COLOR color=BLACK){
+    void clear(COLOR color=0){
         lcd.set_area_color(color, 0,0, Width, Height);
+        _background = color;
     }
+
+    inline COLOR background() const { return _background; }
 
     void set_point_color(COLOR color, uint16_t x, uint16_t y) const;
     void point(uint16_t x, uint16_t y, COLOR color, DOT_PIXEL pixel_size, DOT_STYLE style) const;

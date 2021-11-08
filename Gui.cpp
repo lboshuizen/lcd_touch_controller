@@ -11,7 +11,7 @@ void Control::draw(const LcdScreen &scr) const
 
 void Button::draw(const LcdScreen &scr) const
 {
-    scr.rect(_x,_y,_x+_w, _y+_h,_color, LINE_SOLID, DOT_PIXEL_1X1);
+    scr.rect(_x,_y,_x2, _y2,_color, LINE_SOLID, DOT_PIXEL_1X1);
     if( _text == nullptr) return;
     scr.text(_x+5, _y+5+_font->Height, _text, _color,0,_font);
 };

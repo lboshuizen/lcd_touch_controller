@@ -7,6 +7,7 @@
 
 #include <hardware/gpio.h>
 #include "hardware/spi.h"
+#include "Spi.h"
 #include <sys/unistd.h>
 #include <LCD_Driver.h>
 
@@ -28,8 +29,13 @@ public:
         gpio_set_dir(pinnr, pinmode);
     }
 
-    void up() const{ gpio_put(pin, 1); }
-    void down() const{ gpio_put(pin, 0); }
+    inline void up() const{ gpio_put(pin, 1); }
+    inline void down() const{ gpio_put(pin, 0); }
+
+    inline bool value(){ return gpio_get(pin); }
+
+    inline bool isUp(){ return value() == true; }
+    inline bool isDown(){ return !isUp(); }
 
     const uint pin;
     const bool mode;
@@ -43,13 +49,16 @@ private:
     Pin CS;
     Pin DC;
 
-    uint8_t spi_write(uint8_t value);
-    uint8_t spi_read(uint8_t value);
+    Spi &_spi;
+
+    inline void spi_write(uint8_t value){ _spi.write(value); }
+    inline uint8_t spi_read(uint8_t value){ return _spi.read(value); }
 
     void write_parameter(uint8_t data);
     void write_reg(uint8_t reg);
 
     void set_reg(uint8_t reg, uint8_t data);
+
     void set_scandir(LCD_SCAN_DIR sd){ set_reg( 0x36, sd); write_reg(0x29); }
 
     void write_all_data(uint16_t data, uint32_t len);
@@ -57,9 +66,10 @@ private:
 
 public:
 
-    LcdDriver() : RST(Pin(LCD_RST_PIN, GPIO_OUT)),
+    LcdDriver(Spi &spi) : RST(Pin(LCD_RST_PIN, GPIO_OUT)),
                   CS(Pin(LCD_CS_PIN, GPIO_OUT)),
-                  DC(Pin(LCD_DC_PIN, GPIO_OUT))
+                  DC(Pin(LCD_DC_PIN, GPIO_OUT)),
+                  _spi(spi)
                   {}
 
     LcdDriver(const LcdDriver& copy) = delete;

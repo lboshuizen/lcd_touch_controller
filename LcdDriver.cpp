@@ -4,18 +4,6 @@
 
 #include "LcdDriver.h"
 
-uint8_t LcdDriver::spi_write(uint8_t value)
-{
-    uint8_t rxDat;
-    spi_write_read_blocking(spi1,&value,&rxDat,1);
-    return rxDat;
-}
-
-uint8_t LcdDriver::spi_read(uint8_t value)
-{
-    return spi_write(value);
-}
-
 void LcdDriver::write_parameter(uint8_t data){
     DC.up();
     CS.down();
@@ -72,7 +60,6 @@ void LcdDriver::set_reg(uint8_t reg, uint8_t data){
 }
 
 void LcdDriver::init(LCD_SCAN_DIR scanDir){
-    spi_init(spi1, 14000000);
     gpio_set_function(LCD_CLK_PIN,GPIO_FUNC_SPI);
     gpio_set_function(LCD_MOSI_PIN,GPIO_FUNC_SPI);
     gpio_set_function(LCD_MISO_PIN,GPIO_FUNC_SPI);
@@ -83,7 +70,7 @@ void LcdDriver::init(LCD_SCAN_DIR scanDir){
     reset();
     init_reg();
 
-    set_scandir(scanDir);
+    //set_scandir(scanDir);
 
     sleep_ms(200);
 }
@@ -93,7 +80,8 @@ void LcdDriver::init_reg() {
     write_reg(0x11); // Sleep OUT
     sleep_ms(100);
 
-    set_reg(0x36, 0x00); // Memory Access Control - aka scandir R2L-T2B
+    //set_reg(0x36, 0xA0); // Memory Access Control - aka scandir R2L-T2B
+    set_reg(0x36, 0b1100000); // Memory Access Control - aka scandir R2L-T2B
     set_reg(0x3a, 0x55); // COLMOD: 65k RGB-Interface, 16bit/pixel
 
     write_reg(0xb2); // Porch Settting
