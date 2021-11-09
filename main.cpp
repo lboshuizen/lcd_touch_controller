@@ -67,7 +67,7 @@ void itoa(uint x, char *p){
 
 int main(void)
 {
-    stdio_init_all();
+    // stdio_init_all();
 
     Spi Spi1(spi1, 18000000);
     Spi1.init();
