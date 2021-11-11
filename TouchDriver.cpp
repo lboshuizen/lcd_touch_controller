@@ -14,7 +14,7 @@ uint16_t TouchDriver::read_adc(uint8_t channel){
     uint16_t data = _spi.read(0X00);
     data <<= 8;//7bit
     data |= _spi.read(0X00);
-    data >>= 4;//5bit
+    //data >>= 4;//5bit
 
     return data;
 }
@@ -63,7 +63,6 @@ void TouchDriver::update()
     data[1] = read_adc(0x91 /* X */) >> 3;
     data[2] = read_adc(0xD1 /* Y */) >> 3;
     data[3] = read_adc(0x91 /* X */) >> 3;
-
     data[4] = read_adc(0xD1 /* Y */) >> 3;
     data[5] = read_adc(0x90 /* X */) >> 3; // last, allow panel to power down
 

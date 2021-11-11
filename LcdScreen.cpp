@@ -7,12 +7,12 @@
 
 using namespace std;
 
-void LcdScreen::set_point_color(COLOR color, uint16_t x, uint16_t y) const{
+void LcdScreen::set_point_color(const Color & color, uint16_t x, uint16_t y) const{
     lcd.set_window(x,y,x,y);
     lcd.set_color(color,1,1);
 }
 
-void LcdScreen::point(uint16_t x, uint16_t y, COLOR color, DOT_PIXEL pixel_size, DOT_STYLE style) const{
+void LcdScreen::point(uint16_t x, uint16_t y, const Color & color, DOT_PIXEL pixel_size, DOT_STYLE style) const{
     if ( x > Width || y > Height) {
         return;
     }
@@ -34,7 +34,7 @@ void LcdScreen::point(uint16_t x, uint16_t y, COLOR color, DOT_PIXEL pixel_size,
 
 }
 
-void LcdScreen::line( uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, COLOR color, LINE_STYLE style, DOT_PIXEL width ) const
+void LcdScreen::line( uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, const Color & color, LINE_STYLE style, DOT_PIXEL width ) const
 {
     // Bresenham's line algorithm
     const bool steep = (abs(y2 - y1) > abs(x2 - x1));
@@ -80,7 +80,7 @@ void LcdScreen::line( uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, COLOR 
     }
 }
 
-void LcdScreen::rect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, COLOR color, LINE_STYLE style, DOT_PIXEL width) const{
+void LcdScreen::rect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, const Color & color, LINE_STYLE style, DOT_PIXEL width) const{
     // horizontals
     line(x1,y1,x2,y1, color, style, width);
     line(x1,y2,x2,y2, color, style, width);
@@ -91,7 +91,7 @@ void LcdScreen::rect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, COLOR c
 
 }
 
-void LcdScreen::circle(uint16_t xc, uint16_t yc, uint16_t radius, COLOR color, LINE_STYLE style, DOT_PIXEL width) const{
+void LcdScreen::circle(uint16_t xc, uint16_t yc, uint16_t radius, const Color & color, LINE_STYLE style, DOT_PIXEL width) const{
 
     auto segments = [this,color, width](uint16_t xc, uint16_t yc, uint16_t x, uint16_t y){
         point(xc+x, yc+y, color,width, DOT_STYLE_DFT);
@@ -126,14 +126,14 @@ void LcdScreen::circle(uint16_t xc, uint16_t yc, uint16_t radius, COLOR color, L
     }
 };
 
-void LcdScreen::character(uint16_t x, uint16_t y, const char c, COLOR txt_color, COLOR bgd_color, const sFONT *font) const{
+void LcdScreen::character(uint16_t x, uint16_t y, const char c, const Color & txt_color, const Color & bgd_color, const sFONT *font) const{
 
     uint32_t char_index = (c - ' ') * font->Height * (font->Width / 8 + (font->Width % 8 ? 1 : 0));
     const unsigned char *ptr = &font->table[char_index];
 
     for (auto row = 0; row < font->Height; row++) {
         for (auto col = 0; col < font->Width; col++) {
-            COLOR clr = *ptr & (0x80 >> (col % 8)) ? txt_color : bgd_color;
+            auto clr = *ptr & (0x80 >> (col % 8)) ? txt_color : bgd_color;
             point(x + col, y + row, clr, DOT_PIXEL_DFT, DOT_STYLE_DFT);
             if (col % 8 == 7)
                 ptr++;
@@ -143,7 +143,7 @@ void LcdScreen::character(uint16_t x, uint16_t y, const char c, COLOR txt_color,
     }
 }
 
-void LcdScreen::text(uint16_t x, uint16_t y, const char *text, COLOR txt_color, COLOR bgd_color, const sFONT *font) const{
+void LcdScreen::text(uint16_t x, uint16_t y, const char *text, const Color &txt_color, const Color & bgd_color, const sFONT *font) const{
     POINT Xpoint = x;
     POINT Ypoint = y;
 

@@ -17,7 +17,10 @@ add_executable(
         touchcontroller
         main.cpp
         lcd_test.c
-        screen.cpp screen.h LcdDriver.cpp LcdDriver.h LcdScreen.cpp LcdScreen.h Gui.cpp Gui.h TouchDriver.cpp TouchDriver.h Spi.cpp Spi.h)
+        LcdDriver.cpp LcdDriver.h LcdScreen.cpp LcdScreen.h Gui.cpp Gui.h TouchDriver.cpp TouchDriver.h Spi.cpp Spi.h Color.cpp Color.h View.cpp View.h)
+
+pico_enable_stdio_usb(touchcontroller 1)
+pico_enable_stdio_uart(touchcontroller 0)
 
 # Pull in our pico_stdlib which pulls in commonly used features
 target_link_libraries(touchcontroller pico_stdlib touchlcd hardware_spi)

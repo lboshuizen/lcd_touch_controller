@@ -21,20 +21,42 @@ protected:
 
 private:
 
-    std::function<bool(Drawable &)> _on_touched;
-    static bool default_handler(Drawable &_){ return false; }
+    static bool default_handler(int, int){ return false; }
 
 public:
     Drawable(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2):
         _x(x1), _y(y1), _x2(x2), _y2(y2),
-        _visible(true),
-        _on_touched(default_handler){};
+        _visible(true)
+        //on_touched(default_handler)
+        {};
+
+    bool touch_start(const Point &p){
+        if( p.X() < _x || p.X() > _x2 || p.Y() < _y || p.Y() > _y2 ) return false;
+        printf("hit\n");
+        on_touch();
+        return true;
+    }
+
+    virtual void touch_end(){}
+
+    virtual bool on_touch(){ return false; };
+
     virtual void draw(const LcdScreen &scr) const = 0;
 
     inline bool IsVisible() const { return _visible; };
     inline void visible(bool f){ _visible = f;};
+};
 
-    void touched(std::function<bool(Drawable &)> &f){ _on_touched = f;}
+class Rect : Drawable {
+
+};
+
+class Text : Drawable {
+
+};
+
+class Circle : Drawable {
+
 };
 
 class Control : public Drawable {
@@ -55,48 +77,40 @@ public:
 
 class Button : public Control {
 private:
-    COLOR   _color;
+    Color _color;
     const char *_text;
     const sFONT *_font;
 
+    Color _tColor = Color(0,0,0);
+
+    bool hit = false;
+
 public:
 
-    inline void set_color(COLOR c){ _color = c; }
-    inline COLOR get_color() const { return _color; };
+    inline void set_color(const Color &c){ _color = c; }
+    inline const Color & get_color() const { return _color; };
 
-    Button(uint16_t x, uint16_t y, uint16_t w, uint16_t h, COLOR c):
+    bool on_touch() override {
+        hit = true;
+        _tColor = _color;
+        _color = _color.dim(.5f);
+        return true;
+    };
+
+    void touch_end() override {
+        if(!hit) return;
+        _color = _tColor;
+    }
+
+    Button(uint16_t x, uint16_t y, uint16_t w, uint16_t h,const Color &c):
         Control(x,y,x+w, y+h),
         _color(c), _text(nullptr), _font(nullptr){}
 
-    Button(uint16_t x, uint16_t y, uint16_t w, uint16_t h, COLOR c, const char *t, const sFONT *f):
+    Button(uint16_t x, uint16_t y, uint16_t w, uint16_t h,const Color &c, const char *t, const sFONT *f):
             Control(x,y,x+w, y+h),
             _color(c), _text(t), _font(f){}
 
     void draw(const LcdScreen &scr) const override;
 };
-
-class View {
-
-private:
-    Drawable **_controls;
-    size_t   _cnt;
-public:
-
-    explicit View(Drawable *c[], size_t l): _controls(c), _cnt(l){};
-
-    void draw(const LcdScreen &scr) const {
-        for(uint i=0; i<_cnt; i++ ){
-            auto c = _controls[i];
-            if( c->IsVisible()) {
-                c->draw(scr);
-            }
-        }
-    }
-};
-
-class Gui {
-
-};
-
 
 #endif //TOUCHCONTROLLER_GUI_H

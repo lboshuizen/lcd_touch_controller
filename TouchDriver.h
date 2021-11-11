@@ -25,7 +25,9 @@ private:
 
     absolute_time_t _lastread = {0};
 
-    int rotation = 1;
+    int rotation = 0;
+
+    Point last = {0,0};
 
 public:
 
@@ -41,29 +43,36 @@ public:
 
     void init(){
         CS.up();
-        gpio_set_pulls(IRQ_PIN, true, false);
+        gpio_set_pulls(IRQ.pin, true, false);
         _lastread = get_absolute_time();
+        auto br = _spi.switch_baudrate(1000000);
+        read_adc(0x80);
+        _spi.set_baudrate( br );
     }
 
-    inline bool isTouched(){ return IRQ.isDown(); }
+    [[nodiscard]] Point lastTouch() const {return {_x, _y}; }
 
-    bool scan(LcdScreen &scr){
+    bool isTouched(){ return IRQ.isDown(); }
 
-        if( !isTouched() ) return false;
+    const Point *scan(LcdScreen &scr){
+
+        //printf("%d", IRQ.value());
 
         auto br = _spi.switch_baudrate(1000000);
         update();
         _spi.set_baudrate( br );
 
-        auto t = _x;
-        _x = _y;
-        _y = t;
-        _x = scr.Width - _x;
+        _x /= (4095/scr.Width);
+        _y /= (4095/scr.Height);
 
-        scr.point(_x,_y,WHITE, DOT_PIXEL_4X4, DOT_FILL_AROUND);
+        last = {_x,_y};
 
+        if(IRQ.value()) return nullptr;
 
-        return true;
+        printf("%03d|%03d\t", _x, _y);
+        printf("%03d|%03d\n", last.X(), last.Y());
+
+        return &last;
     }
 
 };

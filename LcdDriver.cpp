@@ -47,7 +47,7 @@ void LcdDriver::set_window(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
     write_reg(0x2C); // Memory Write
 }
 
-void LcdDriver::set_area_color(uint16_t color, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
+void LcdDriver::set_area_color(const Color & color, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
     if( (x2 > x1) && (y2 > y1)){
         set_window(x1,y1,x2,y2);
         set_color(color, x2-x1, y2-y1);

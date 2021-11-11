@@ -4,6 +4,8 @@
 #include "Gui.h"
 #include "Spi.h"
 #include "TouchDriver.h"
+#include "Color.h"
+#include "View.h"
 
 #include <exception>
 #include <functional>
@@ -30,44 +32,27 @@ extern "C" void __cxa_pure_virtual()
     while (1);
 }
 
-void scan(const std::function<void()> &cb){
+void loop(const std::function<void()> &cb){
+    static bool toggle = false;
     Pin led(25,GPIO_OUT);
-    led.up();
 
     while(1) {
-        sleep_ms(10);
+        //printf("t");
         cb();
+        sleep_ms(100);
+        toggle = !toggle;
+        led.value( toggle );
     }
 }
 
-void itoa(uint x, char *p){
-    int digit=0;
-    char num[12];
+const Color red50 = Red.dim(.5);
 
-    if( x == 0){
-        *p = '0';
-        *(p+1)= 0;
-        return;
-    }
-
-    while (x) {
-        num[digit] = x % 10 + '0';
-        digit++;
-        x /= 10;
-    }
-
-    //The string is inverted
-    while (digit > 0) {
-        *p = num[digit - 1];
-        p++;
-        digit--;
-    }
-    *p = 0;
+void init(){
 }
 
 int main(void)
 {
-    // stdio_init_all();
+    stdio_init_all();
 
     Spi Spi1(spi1, 18000000);
     Spi1.init();
@@ -76,32 +61,41 @@ int main(void)
     lcd.init(static_cast<LCD_SCAN_DIR>(5));
 
     LcdScreen screen(lcd);
-    screen.clear();
 
     TouchDriver td(Spi1);
     td.init();
 
-    Button c1(10,10,50,50,GREEN);
-    Button c2(80,10,50,50,RED, "Zzz", &Font16);
-    //Button c2(10,10,50,50,RED);
+    screen.clear(Black);
 
-    Drawable* c[] { &c1, &c2 };
+    // Woonkamer
+    Button c1(80, 10, 75, 50, Green, "Tuin", &Font12 );
+    Button c2(160, 10, 75, 50, Green, "Eettafel", &Font12 );
+    Button c3(240, 10, 75, 50, Green, "Plafond", &Font12 );
+    Button c4(80, 65, 75, 50, Green, "Sl1", &Font12 );
+    Button c5(160, 65, 75, 50, Green, "Sl2", &Font12);
+    Button c6(80, 130, 150, 50, Red, "Zzz", &Font12);
+    Drawable* c[] { &c1, &c2 , &c3, &c4, &c5, &c6 };
+    View v1( c, 6 );
 
-    View v1( c, 2 );
     v1.draw(screen);
 
-    std::function<void()> ontick = [&c2, v1, &screen, &td](){
-        COLOR c = td.scan(screen) ? GREEN : RED;
+    std::function<void()> ontick = [&](){
+        const Point *p = td.scan(screen);
 
-        char n[12];
-        itoa(td._x, n);
-        screen.text(40,100, n, WHITE, BLACK, &Font16);
-        itoa(td._y, n);
-        screen.text(40,120, n, WHITE, BLACK, &Font16);
+        if(p) {
+            v1.touch(*p);
+            screen.point(p->X(),p->Y(), White, DOT_PIXEL_2X2, DOT_FILL_RIGHTUP);
+        }
+        else{
+            v1.touch_done();
+        }
 
-        c2.set_color(c);
+        char n[80];
+        sprintf(n, "x: %03d y:%03d r:%5d r5:%5d", td._x, td._y, (uint16_t) Red, (uint16_t) red50 );
+        screen.text(10,220, n, White, Black, &Font8);
+
         v1.draw( screen );
     };
 
-    scan(ontick);
+    loop(ontick);
 }

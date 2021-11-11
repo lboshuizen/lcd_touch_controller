@@ -8,6 +8,7 @@
 #include <hardware/gpio.h>
 #include "hardware/spi.h"
 #include "Spi.h"
+#include "Color.h"
 #include <sys/unistd.h>
 #include <LCD_Driver.h>
 
@@ -32,10 +33,10 @@ public:
     inline void up() const{ gpio_put(pin, 1); }
     inline void down() const{ gpio_put(pin, 0); }
 
-    inline bool value(){ return gpio_get(pin); }
-
-    inline bool isUp(){ return value() == true; }
-    inline bool isDown(){ return !isUp(); }
+    bool value() const { return gpio_get(pin); }
+    void value(bool v) const { return gpio_put(pin,v); }
+    bool isUp() const { return value(); }
+    bool isDown() const { return !isUp(); }
 
     const uint pin;
     const bool mode;
@@ -85,11 +86,11 @@ public:
         sleep_ms(500);
     }
 
-    void set_color(COLOR color, uint16_t x, uint16_t y ){
-        write_all_data( color, (uint32_t) x * (uint32_t) y);
+    void set_color(const Color & color, uint16_t x, uint16_t y ){
+        write_all_data( (uint16_t) color, (uint32_t) x * (uint32_t) y);
     }
 
-    void set_area_color(COLOR color, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
+    void set_area_color(const Color & color, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 
     void set_window(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2);
 
