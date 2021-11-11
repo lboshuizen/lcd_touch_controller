@@ -45,9 +45,6 @@ public:
         CS.up();
         gpio_set_pulls(IRQ.pin, true, false);
         _lastread = get_absolute_time();
-        auto br = _spi.switch_baudrate(1000000);
-        read_adc(0x80);
-        _spi.set_baudrate( br );
     }
 
     [[nodiscard]] Point lastTouch() const {return {_x, _y}; }
@@ -55,9 +52,6 @@ public:
     bool isTouched(){ return IRQ.isDown(); }
 
     const Point *scan(LcdScreen &scr){
-
-        //printf("%d", IRQ.value());
-
         auto br = _spi.switch_baudrate(1000000);
         update();
         _spi.set_baudrate( br );
@@ -68,9 +62,6 @@ public:
         last = {_x,_y};
 
         if(IRQ.value()) return nullptr;
-
-        printf("%03d|%03d\t", _x, _y);
-        printf("%03d|%03d\n", last.X(), last.Y());
 
         return &last;
     }

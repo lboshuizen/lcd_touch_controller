@@ -12,27 +12,26 @@
 class Drawable {
 
 protected:
-    uint16_t _x;
-    uint16_t _y;
-    uint16_t _x2;
-    uint16_t _y2;
 
+    Rect    r;
     bool _visible;
 
 private:
 
-    static bool default_handler(int, int){ return false; }
-
 public:
     Drawable(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2):
-        _x(x1), _y(y1), _x2(x2), _y2(y2),
+        r({x1,y1},{x2,y2}),
         _visible(true)
-        //on_touched(default_handler)
         {};
 
+    Drawable(const Rect &rect):
+            r(rect),
+            _visible(true)
+    {};
+
     bool touch_start(const Point &p){
-        if( p.X() < _x || p.X() > _x2 || p.Y() < _y || p.Y() > _y2 ) return false;
-        printf("hit\n");
+        if( !r.covers(p) ) return false;
+
         on_touch();
         return true;
     }
@@ -43,12 +42,11 @@ public:
 
     virtual void draw(const LcdScreen &scr) const = 0;
 
-    inline bool IsVisible() const { return _visible; };
+    [[nodiscard]] inline bool IsVisible() const { return _visible; };
     inline void visible(bool f){ _visible = f;};
 };
 
-class Rect : Drawable {
-
+class RectArea : Drawable {
 };
 
 class Text : Drawable {
@@ -64,8 +62,8 @@ class Control : public Drawable {
     bool _enabled;
 
 public:
-    Control(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) :
-    Drawable(x1,y1,x2,y2),
+    Control(const Rect &rect) :
+    Drawable(rect),
     _enabled(true){}
 
     void draw(const LcdScreen &scr) const override;
@@ -102,12 +100,12 @@ public:
         _color = _tColor;
     }
 
-    Button(uint16_t x, uint16_t y, uint16_t w, uint16_t h,const Color &c):
-        Control(x,y,x+w, y+h),
+    Button(const Rect &r,const Color &c):
+        Control(r),
         _color(c), _text(nullptr), _font(nullptr){}
 
-    Button(uint16_t x, uint16_t y, uint16_t w, uint16_t h,const Color &c, const char *t, const sFONT *f):
-            Control(x,y,x+w, y+h),
+    Button(const Rect &r,const Color &c, const char *t, const sFONT *f):
+            Control(r),
             _color(c), _text(t), _font(f){}
 
     void draw(const LcdScreen &scr) const override;

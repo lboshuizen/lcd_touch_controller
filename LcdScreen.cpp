@@ -34,10 +34,15 @@ void LcdScreen::point(uint16_t x, uint16_t y, const Color & color, DOT_PIXEL pix
 
 }
 
-void LcdScreen::line( uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, const Color & color, LINE_STYLE style, DOT_PIXEL width ) const
+void LcdScreen::line( const Point &s, const Point &e, const Color & color, LINE_STYLE style, DOT_PIXEL width ) const
 {
+    auto x1=s.X();
+    auto x2=e.X();
+    auto y1=s.Y();
+    auto y2=e.Y();
+
     // Bresenham's line algorithm
-    const bool steep = (abs(y2 - y1) > abs(x2 - x1));
+    const bool steep = (abs(e.Y() - s.Y()) > abs(e.X() - s.X()));
     if(steep)
     {
         std::swap(x1, y1);
@@ -80,18 +85,20 @@ void LcdScreen::line( uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, const 
     }
 }
 
-void LcdScreen::rect(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2, const Color & color, LINE_STYLE style, DOT_PIXEL width) const{
+void LcdScreen::rect(const Point &tl, const Point &br, const Color & color, LINE_STYLE style, DOT_PIXEL width) const {
     // horizontals
-    line(x1,y1,x2,y1, color, style, width);
-    line(x1,y2,x2,y2, color, style, width);
+    line(tl, {br.X(), tl.Y()}, color, style, width);
+    line({tl.X(), br.Y()}, br, color, style, width);
 
     //verticals
-    line(x1,y1,x1,y2, color, style, width);
-    line(x2,y1,x2,y2, color, style, width);
-
+    line(tl, {tl.X(), br.Y()}, color, style, width);
+    line({br.X(), tl.Y()}, br, color, style, width);
 }
 
-void LcdScreen::circle(uint16_t xc, uint16_t yc, uint16_t radius, const Color & color, LINE_STYLE style, DOT_PIXEL width) const{
+void LcdScreen::circle(const Point &c, uint16_t radius, const Color & color, LINE_STYLE style, DOT_PIXEL width) const {
+
+    auto xc = c.X();
+    auto yc = c.Y();
 
     auto segments = [this,color, width](uint16_t xc, uint16_t yc, uint16_t x, uint16_t y){
         point(xc+x, yc+y, color,width, DOT_STYLE_DFT);
@@ -126,7 +133,7 @@ void LcdScreen::circle(uint16_t xc, uint16_t yc, uint16_t radius, const Color & 
     }
 };
 
-void LcdScreen::character(uint16_t x, uint16_t y, const char c, const Color & txt_color, const Color & bgd_color, const sFONT *font) const{
+void LcdScreen::character(const Point &p, const char c, const Color & txt_color, const Color & bgd_color, const sFONT *font) const{
 
     uint32_t char_index = (c - ' ') * font->Height * (font->Width / 8 + (font->Width % 8 ? 1 : 0));
     const unsigned char *ptr = &font->table[char_index];
@@ -134,7 +141,7 @@ void LcdScreen::character(uint16_t x, uint16_t y, const char c, const Color & tx
     for (auto row = 0; row < font->Height; row++) {
         for (auto col = 0; col < font->Width; col++) {
             auto clr = *ptr & (0x80 >> (col % 8)) ? txt_color : bgd_color;
-            point(x + col, y + row, clr, DOT_PIXEL_DFT, DOT_STYLE_DFT);
+            point(p.X() + col, p.Y() + row, clr, DOT_PIXEL_DFT, DOT_STYLE_DFT);
             if (col % 8 == 7)
                 ptr++;
         }
@@ -143,27 +150,27 @@ void LcdScreen::character(uint16_t x, uint16_t y, const char c, const Color & tx
     }
 }
 
-void LcdScreen::text(uint16_t x, uint16_t y, const char *text, const Color &txt_color, const Color & bgd_color, const sFONT *font) const{
-    POINT Xpoint = x;
-    POINT Ypoint = y;
+void LcdScreen::text(const Point &p, const char *text, const Color &txt_color, const Color & bgd_color, const sFONT *font) const{
+    auto x = p.X();
+    auto y = p.Y();
 
     while (*text != '\0') {
         /*
         // wrap x
-        if ((Xpoint + font->Width) > sLCD_DIS.LCD_Dis_Column) {
-            Xpoint = x;
-            Ypoint += font->Height;
+        if ((x + font->Width) > sLCD_DIS.LCD_Dis_Column) {
+            x = x;
+            y += font->Height;
         }
 
         // wrap y
-        if ((Ypoint + font->Height) > sLCD_DIS.LCD_Dis_Page) {
-            Xpoint = Xstart;
-            Ypoint = Ystart;
+        if ((y + font->Height) > sLCD_DIS.LCD_Dis_Page) {
+            x = Xstart;
+            y = Ystart;
         }
         */
 
-        character(Xpoint,Ypoint,*text,txt_color, bgd_color, font);
+        character({x, y}, *text, txt_color, bgd_color, font);
         text++;
-        Xpoint += font->Width;
+        x += font->Width;
     }
 }

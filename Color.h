@@ -16,9 +16,26 @@ public:
 
     Point(uint16_t x, uint16_t y): _x(x), _y(y){}
 
+    [[nodiscard]] Point flip() const{ return {_y,_x}; }
+
     [[nodiscard]] inline uint16_t X() const { return _x;};
     [[nodiscard]] inline uint16_t Y() const { return _y;};
 
+    [[nodiscard]] Point shiftx(uint16_t x) const { return shift(x,0); }
+    [[nodiscard]] Point shifty(uint16_t y) const { return shift(0,y); }
+    [[nodiscard]] Point shift(uint16_t x, uint16_t y) const {return Point(_x+x,_y+y); }
+};
+
+class Rect {
+
+public:
+    Rect(const Point &tl, const Point& br): TL(tl), BR(br){};
+    Rect(const Point &tl, uint16_t w, uint16_t h): TL(tl), BR(Point(tl.X() + w, tl.Y() + h)){};
+
+    const Point &TL;
+    const Point BR;
+
+    [[nodiscard]] inline bool covers(const Point& p) const { return p.X() >= TL.X() && p.X() <= BR.X() && p.Y() >= TL.Y() && p.Y() <= BR.Y(); }
 };
 
 class Color {

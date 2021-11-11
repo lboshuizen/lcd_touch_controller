@@ -10,7 +10,6 @@
 #include "Spi.h"
 #include "Color.h"
 #include <sys/unistd.h>
-#include <LCD_Driver.h>
 
 #define LCD_RST_PIN		15
 #define LCD_DC_PIN		8
@@ -41,6 +40,18 @@ public:
     const uint pin;
     const bool mode;
 };
+
+typedef enum {
+    L2R_U2D  = 0,	//The display interface is displayed , left to right, up to down
+    L2R_D2U  ,
+    R2L_U2D  ,
+    R2L_D2U  ,
+
+    U2D_L2R  ,
+    U2D_R2L  ,
+    D2U_L2R  ,
+    D2U_R2L  ,
+} LCD_SCAN_DIR;
 
 class LcdDriver {
 
