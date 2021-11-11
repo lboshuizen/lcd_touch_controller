@@ -54,8 +54,8 @@
 typedef struct _tFont
 {    
   const uint8_t *table;
-  uint16_t Width;
-  uint16_t Height;
+  const uint16_t Width;
+  const uint16_t Height;
   
 } sFONT;
 
