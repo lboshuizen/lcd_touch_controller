@@ -13,102 +13,90 @@ class Drawable {
 
 protected:
 
-    Rect    r;
-    bool _visible;
+    const Rect &r;
+    bool _visible = true;
+    bool _enabled = false;
 
 private:
 
 public:
-    Drawable(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2):
-        r({x1,y1},{x2,y2}),
-        _visible(true)
-        {};
 
-    Drawable(const Rect &rect):
-            r(rect),
-            _visible(true)
-    {};
+    explicit Drawable(const Rect &rect) : r(rect) {};
 
-    bool touch_start(const Point &p){
-        if( !r.covers(p) ) return false;
+    void touch_start(const Point &p) {
+        if (!r.covers(p)) return;
 
         on_touch();
-        return true;
     }
 
-    virtual void touch_end(){}
+    virtual void touch_end() {}
 
-    virtual bool on_touch(){ return false; };
+    virtual void on_touch() { return; };
 
     virtual void draw(const LcdScreen &scr) const = 0;
 
     [[nodiscard]] inline bool IsVisible() const { return _visible; };
-    inline void visible(bool f){ _visible = f;};
+
+    inline void visible(bool f) { _visible = f; };
+
+    inline bool IsEnabled() const { return _enabled; };
+
+    inline void disable() { enable(false); }
+
+    inline void enable(bool f = true) { _enabled = f; };
 };
 
 class RectArea : Drawable {
 };
 
 class Text : Drawable {
-
 };
 
 class Circle : Drawable {
-
 };
 
-class Control : public Drawable {
-
-    bool _enabled;
-
-public:
-    Control(const Rect &rect) :
-    Drawable(rect),
-    _enabled(true){}
-
-    void draw(const LcdScreen &scr) const override;
-
-    inline bool IsEnabled() const { return _enabled; };
-    inline void disable(){ enable(false); }
-    inline void enable(bool f=true){ _enabled = f;};
-};
-
-class Button : public Control {
+class Button : public Drawable {
 private:
     Color _color;
+    Color _dimmed = Color(0, 0, 0);
+
     const char *_text;
     const sFONT *_font;
 
-    Color _tColor = Color(0,0,0);
-
-    bool hit = false;
+    bool _touched = false;
 
 public:
 
-    inline void set_color(const Color &c){ _color = c; }
-    inline const Color & get_color() const { return _color; };
+    inline void set_color(const Color &c) { _color = c; }
 
-    bool on_touch() override {
-        hit = true;
-        _tColor = _color;
-        _color = _color.dim(.5f);
-        return true;
+    inline const Color &get_color() const { return _color; };
+
+    void on_touch() override {
+        _touched = true;
     };
 
     void touch_end() override {
-        if(!hit) return;
-        _color = _tColor;
+        _touched = false;
     }
 
-    Button(const Rect &r,const Color &c):
-        Control(r),
-        _color(c), _text(nullptr), _font(nullptr){}
+    Button(const Rect &r, const Color &c) :
+            Drawable(r),
+            _color(c), _dimmed(c.dim(.5)), _text(nullptr), _font(nullptr) {
+        _enabled = true;
+    }
 
-    Button(const Rect &r,const Color &c, const char *t, const sFONT *f):
-            Control(r),
-            _color(c), _text(t), _font(f){}
+    Button(const Rect &r, const Color &c, const char *t, const sFONT *f) :
+            Drawable(r),
+            _color(c), _text(t), _font(f) {
+        _enabled = true;
+    }
 
-    void draw(const LcdScreen &scr) const override;
+    void draw(const LcdScreen &scr) const override {
+        const Color &rc = (!_touched && _enabled) ? _color : _dimmed;
+        scr.rect(r.TL, r.BR, rc, LINE_SOLID, DOT_PIXEL_1X1);
+        if (_text == nullptr) return;
+        scr.text(r.TL.shift(5, 5 + _font->Height), _text, rc, scr.background(), _font);
+    };
 };
 
 #endif //TOUCHCONTROLLER_GUI_H

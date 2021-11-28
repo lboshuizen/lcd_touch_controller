@@ -155,6 +155,14 @@ void LcdScreen::text(const Point &p, const char *text, const Color &txt_color, c
     auto y = p.Y();
 
     while (*text != '\0') {
+
+        if(*text == '\n'){
+            x = p.X();
+            y += font->Height;
+            text++;
+            continue;
+        }
+
         /*
         // wrap x
         if ((x + font->Width) > sLCD_DIS.LCD_Dis_Column) {

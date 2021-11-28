@@ -34,7 +34,10 @@ public:
         in_touch = true;
 
         for(auto i=0; i<_cnt;i++){
-            _controls[i]->touch_start(p);
+            auto c = _controls[i];
+            if( c->IsEnabled()) {
+                c->touch_start(p);
+            }
         }
     }
 

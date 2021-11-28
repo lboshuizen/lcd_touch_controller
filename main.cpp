@@ -6,10 +6,12 @@
 #include "TouchDriver.h"
 #include "Color.h"
 #include "View.h"
+#include "esp8266_01.h"
 
 #include <exception>
 #include <functional>
 #include <string>
+#include <pico/stdio.h>
 
 namespace std {
 
@@ -52,7 +54,19 @@ void init(){
 
 int main(void)
 {
-    //stdio_init_all();
+    stdio_init_all();
+
+    sleep_ms(4000);
+
+    esp8266_01 wifi;
+    wifi.init();
+
+    while(1){
+        sleep_ms(1000);
+        wifi.check();
+     }
+
+    return 0;
 
     Spi Spi1(spi1, 18000000);
     Spi1.init();
@@ -71,8 +85,8 @@ int main(void)
     Button c1({{80, 10}, 75, 50}, Green, "Tuin", &Font12 );
     Button c2({{160, 10}, 75, 50}, Green, "Eettafel", &Font12 );
     Button c3({{240, 10}, 75, 50}, Green, "Plafond", &Font12 );
-    Button c4({{80, 65}, 75, 50}, Green, "Sl1", &Font12 );
-    Button c5({{160, 65}, 75, 50}, Green, "Sl2", &Font12);
+    Button c4({{80, 65}, 75, 50}, Green, "Lamp\nLinks", &Font12 );
+    Button c5({{160, 65}, 75, 50}, Green, "Lamp\nRechts", &Font12);
     Button c6({{80, 130}, 150, 50}, Red, "Zzz", &Font12);
     Drawable* c[] { &c1, &c2 , &c3, &c4, &c5, &c6 };
     View v1( c, 6 );

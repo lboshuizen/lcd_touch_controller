@@ -4,25 +4,25 @@
 
 #include "LcdDriver.h"
 
-void LcdDriver::write_parameter(uint8_t data){
+void LcdDriver::write_parameter(uint8_t data) {
     DC.up();
     CS.down();
-    spi_write( data );
+    spi_write(data);
     CS.up();
 }
 
-void LcdDriver::write_reg(uint8_t reg){
+void LcdDriver::write_reg(uint8_t reg) {
     DC.down();
     CS.down();
-    spi_write( reg );
+    spi_write(reg);
     CS.up();
 }
 
-void LcdDriver::write_all_data(uint16_t data, uint32_t len){
+void LcdDriver::write_all_data(uint16_t data, uint32_t len) {
     DC.up();
     CS.down();
 
-    for(auto i = 0; i < len; i++) {
+    for (auto i = 0; i < len; i++) {
         spi_write(data >> 8);
         spi_write(data & 0XFF);
     }
@@ -32,10 +32,10 @@ void LcdDriver::write_all_data(uint16_t data, uint32_t len){
 
 void LcdDriver::set_window(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
     write_reg(0x2A); // Column Address Set
-    write_parameter(x1 >> 8);	 		//Set the horizontal starting point to the high octet
-    write_parameter(x1 & 0xff);	 	//Set the horizontal starting point to the low octet
-    write_parameter((x2 - 1) >> 8);	//Set the horizontal end to the high octet
-    write_parameter((x2 - 1) & 0xff);	//Set the horizontal end to the low octet
+    write_parameter(x1 >> 8);
+    write_parameter(x1 & 0xff);
+    write_parameter((x2 - 1) >> 8);
+    write_parameter((x2 - 1) & 0xff);
 
     //set the Y coordinates
     write_reg(0x2B); // Row Address Set
@@ -47,22 +47,22 @@ void LcdDriver::set_window(uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
     write_reg(0x2C); // Memory Write
 }
 
-void LcdDriver::set_area_color(const Color & color, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
-    if( (x2 > x1) && (y2 > y1)){
-        set_window(x1,y1,x2,y2);
-        set_color(color, x2-x1, y2-y1);
+void LcdDriver::set_area_color(const Color &color, uint16_t x1, uint16_t y1, uint16_t x2, uint16_t y2) {
+    if ((x2 > x1) && (y2 > y1)) {
+        set_window(x1, y1, x2, y2);
+        set_color(color, x2 - x1, y2 - y1);
     }
 }
 
-void LcdDriver::set_reg(uint8_t reg, uint8_t data){
-    write_reg( reg );
+void LcdDriver::set_reg(uint8_t reg, uint8_t data) {
+    write_reg(reg);
     write_parameter(data);
 }
 
-void LcdDriver::init(LCD_SCAN_DIR scanDir){
-    gpio_set_function(LCD_CLK_PIN,GPIO_FUNC_SPI);
-    gpio_set_function(LCD_MOSI_PIN,GPIO_FUNC_SPI);
-    gpio_set_function(LCD_MISO_PIN,GPIO_FUNC_SPI);
+void LcdDriver::init(LCD_SCAN_DIR scanDir) {
+    gpio_set_function(LCD_CLK_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(LCD_MOSI_PIN, GPIO_FUNC_SPI);
+    gpio_set_function(LCD_MISO_PIN, GPIO_FUNC_SPI);
 
     Pin(LCD_BKL_PIN, GPIO_OUT).up();
     CS.up();
